@@ -92,17 +92,13 @@ def cal_mass(solmat,bc):
     return Q_vec
 
 
-def cal_energy(solmat):
-    iFDF = f_diff.FT_diff_mat(
-        solmat.mat, solmat.alpha / 2., solmat.period)
-    dU = np.dot(iFDF, solmat.mat)
+def cal_energy(solmat,p,q,r):
+    D_1_plus = np.dot(f_diff.diff_1_plus(solmat.mat),solmat.mat)
+    D_1_minus = np.dot(f_diff.diff_1_minus(solmat.mat),solmat.mat)/solmat.h
+    G = (1./2.)*(p)*(solmat.mat**2) + (1./4.)*(r)*(solmat.mat**4) - (1./2.)*(q)*((D_1_plus**2)+(D_1_minus**2))/2.
+    G_sum = (G.sum(axis=0)) * solmat.h
+    return G_sum
 
-    E1 = ((np.linalg.norm(dU[:, 1:], axis=0))**2 +
-          (np.linalg.norm(dU[:, :-1], axis=0))**2) / 2.
-    E2 = -solmat.beta / 2. * \
-        np.linalg.norm(solmat.mat[:, :-1] * solmat.mat[:, 1:], axis=0)**2
-    E_vec = (E1 + E2) * solmat.h
-    return E_vec
 
 
 def cal_energy_wang(solmat):
@@ -125,13 +121,13 @@ if __name__ == '__main__':
     param = sys.argv
     # global var
     g_vals = {
-        "alpha": 2.0,
+        "alpha": 1.9,
         "beta": 1.,
         "L": 0.,  # 左区間
         "R": 1.,  # 右区間
         "M": 100,  # 空間分割数
-        "Tmax":3.,  # 秒数[s]
-        "N": int(3.*1000)  # ステップ数
+        "Tmax":10.,  # 秒数[s]
+        "N": int(10.*1000)  # ステップ数
     }
     """
     dx=0.02

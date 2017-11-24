@@ -80,6 +80,18 @@ def diff_2_p(vec):
     return D_2
 
 
+def diff_1_plus(vec):
+    D_1_plus = np.diag((len(vec)-1)*[1.],k=1) \
+                +np.diag(len(vec)*[-1.])
+    D_1_plus[-1,0] = 1.
+    return D_1_plus
+
+def diff_1_minus(vec):
+    D_1_minus = np.diag((len(vec)-1)*[-1.],k=-1) \
+                + np.diag(len(vec)*[1.])
+    D_1_minus[0,-1] = -1.
+    return D_1_minus
+
 def FFT(vec):
     return fft(vec)
 
@@ -123,7 +135,8 @@ if __name__ == '__main__':
     xs = np.linspace(0.,1.,100,endpoint=False)
     f = np.sin(xs*2*np.pi)
     ft = -FFT_diff(f,2.0,1.)
-    plt.plot(xs,ft.real,label="FFT")
+    dpf = 1./(xs[1]-xs[0]) * np.dot(diff_1_plus(f),f)
+    plt.plot(xs,dpf,label="FFT")
     plt.legend()
     plt.show()
     """
